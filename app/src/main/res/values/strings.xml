@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Gde Veceras</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="selected_location">SELECTED LOCATION</string>
+    <string name="location_name">Enter location name</string>
+    <string name="new_location_activity_title">Enter new location</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="add_favourite_button">Add to favourites</string>
+    <string name="remove_favourite_button">Remove from favourites</string>
+
+    <string-array name="location_type_array">
+        <item>Klub</item>
+        <item>Splav</item>
+        <item>Kafana</item>
+        <item>Restoran</item>
+        <item>Caffe</item>
+        <item>Bar</item>
+        <item>Koncert</item>
+        <item>Festival</item>
+    </string-array>
+</resources>
