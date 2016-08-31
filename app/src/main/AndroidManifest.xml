@@ -28,9 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
 
-            android:name=".NewLocationActivity"
+        <activity
+            android:name=".NewLocationActivity" android:theme="@style/Theme.AppCompat.Translucent"
             android:label="@string/new_location_activity_title">
 
         </activity>

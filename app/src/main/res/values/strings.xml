@@ -13,6 +13,7 @@
     <string name="cancel_button">Cancel</string>
     <string name="add_favourite_button">Add to favourites</string>
     <string name="remove_favourite_button">Remove from favourites</string>
+    <string name="website_link">Visit Website</string>
 
     <string-array name="location_type_array">
         <item>Klub</item>

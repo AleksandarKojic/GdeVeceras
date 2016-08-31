@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,7 +20,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 public class MainActivity extends SingleFragmentActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_ERROR = 0;
-    private MapFragment mapFragmentInstance;
+    private GdeVecerasMapFragment gdeVecerasMapFragmentInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +36,7 @@ public class MainActivity extends SingleFragmentActivity implements NavigationVi
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-                mapFragmentInstance.findLocation();
+                gdeVecerasMapFragmentInstance.findLocation();
             }
         });
 
@@ -90,7 +89,7 @@ public class MainActivity extends SingleFragmentActivity implements NavigationVi
         int id = item.getItemId();
 
         if (id == R.id.show_locations) {
-            mapFragmentInstance.showLocations();
+            gdeVecerasMapFragmentInstance.showLocations();
 
         } else if (id == R.id.nav_gallery) {
 
@@ -119,8 +118,8 @@ public class MainActivity extends SingleFragmentActivity implements NavigationVi
 
     @Override
     protected Fragment createFragment() {
-        mapFragmentInstance = MapFragment.newInstance();
-        return mapFragmentInstance;
+        gdeVecerasMapFragmentInstance = GdeVecerasMapFragment.newMapFragmentInstance();
+        return gdeVecerasMapFragmentInstance;
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.alexandar.gdeveceras.database;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-import com.alexandar.gdeveceras.Location;
+import com.alexandar.gdeveceras.LocationPoint;
 import com.alexandar.gdeveceras.database.LocationDbSchema.LocationTable;
 
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class LocationCursorWrapper extends CursorWrapper {
     }
 
 
-    public Location getLocation() {
+    public LocationPoint getLocation() {
         String uuidString = getString(getColumnIndex(LocationTable.Columns.UUID));
         String latLong = getString(getColumnIndex(LocationTable.Columns.LAT_LONG));
         String locationName = getString(getColumnIndex(LocationTable.Columns.NAME));
@@ -33,7 +33,7 @@ public class LocationCursorWrapper extends CursorWrapper {
         int favourite = getInt(getColumnIndex(LocationTable.Columns.FAVOURITE));
         float rating = getFloat(getColumnIndex(LocationTable.Columns.RATING));
 
-        Location location = new Location(UUID.fromString(uuidString));
+        LocationPoint location = new LocationPoint(UUID.fromString(uuidString));
         location.setLatLong(latLong);
         location.setLocationName(locationName);
         location.setLocationType(locationType);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/dialogMarker">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/locationName"
+        android:layout_marginBottom="29dp"
+        android:layout_above="@+id/latitude"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:hint="Latitude"
+        android:id="@+id/latitude"
+        android:layout_above="@+id/favourite_button"
+        android:layout_toLeftOf="@+id/locationName"
+        android:layout_toStartOf="@+id/locationName"
+        android:layout_marginBottom="80dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:hint="Longitude"
+        android:id="@+id/longitude"
+        android:layout_alignTop="@+id/latitude"
+        android:layout_alignRight="@+id/ratingBar"
+        android:layout_alignEnd="@+id/ratingBar" />
+
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ratingBar"
+        android:numStars="5"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/favourite_button"
+        android:layout_centerHorizontal="true"
+        android:progressTint="@color/colorPrimaryDark"
+        android:stepSize="1" />
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_favourite_button"
+        android:id="@+id/favourite_button"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/website_link"
+        android:id="@+id/websiteLink"
+        android:layout_marginTop="36dp"
+        android:layout_below="@+id/ratingBar"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

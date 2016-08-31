@@ -11,7 +11,7 @@ import java.util.UUID;
 
 // TODO : OBAVEZNO SLICICA. Ne moras nista ni da cuvas sam vec da uzmes fotku sa google street view-a za odredjenu lokaciju pa da korisnik lako moze da prepozna kako izgleda mesto s polja?
 
-public class Location {
+public class LocationPoint {
     // 2 polja koja se koriste za jedinstveni identifikaciju lokacije
     private UUID mLocationID;
     private String mLatLong; // concatenation Stringova latitude i longitude
@@ -25,12 +25,12 @@ public class Location {
     private float mRating;  // ocena od 1 do 10 koja moze da se da mestu
 
     // konstruktor koji se koristi pri kreiranju nove instance
-    public Location(){
+    public LocationPoint(){
         this.mLocationID = UUID.randomUUID();
     }
 
     // konstruktor koji se koristi za kreiranje instance pri ucitavanju iz baze
-    public Location(UUID  mLocationID) {
+    public LocationPoint(UUID  mLocationID) {
         this.mLocationID = mLocationID;
     }
 

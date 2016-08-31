@@ -4,16 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -22,10 +20,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -36,19 +33,21 @@ import java.util.List;
 /**
  * Created by Alexandar on 5/4/2016.
  */
-public class MapFragment extends SupportMapFragment {
+public class GdeVecerasMapFragment extends SupportMapFragment {
 
-    private static final String TAG = "MapFragment";
+    private static final String TAG = "GdeVecerasMapFragment";
     private static final int MY_PERMISSIONS_REQUEST_FINE_COARSE_LOCATIONS = 1;
     public static final int REQUEST_CODE_NEW_LOCATION = 0;
+    private static final String NEW_LOCATION_DIALOG = "newLocationDialog";
 
     private GoogleApiClient mClient;
-    private android.location.Location mCurrentLocation;
+    private Location mCurrentLocation;
     private GoogleMap mMap;
+    private float zoomLevel = 17;
 
 
-    public static MapFragment newInstance() {
-        return new MapFragment();
+    public static GdeVecerasMapFragment newMapFragmentInstance() {
+        return new GdeVecerasMapFragment();
     }
 
 
@@ -61,6 +60,19 @@ public class MapFragment extends SupportMapFragment {
             @Override
             public void onConnected(@Nullable Bundle bundle) {
                 // TODO : ovde mozda ubaci da promeni izgled onog dugmenceta za lociranje, posto to znaci da je nasao lokaciju? Ili to tek uradi kad dobijes location fix kasnije?
+
+                // U zakomentarisani uslov ispod na Note 4 uopste i ne ulazi, verovatno zbog Androida 6 i permissionsa. Zato cuvam poslednju lokaciju u SharedPreferences-u
+//                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+//                    Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mClient);
+//                    mCurrentLocation = lastLocation;
+//                }
+
+
+                if (!SharedPreferences.checkFirstRun(getActivity()).equals("firstRun")) {
+                    mCurrentLocation = SharedPreferences.getStoredLocation(getActivity());
+                    lastLocationZoom();
+                }
+
             }
 
             @Override
@@ -75,6 +87,8 @@ public class MapFragment extends SupportMapFragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
 
+
+
                 mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
@@ -83,6 +97,11 @@ public class MapFragment extends SupportMapFragment {
 
                         Intent i = NewLocationActivity.newIntent(getActivity(), latitude, longitude); // TODO: razmisli da li da mu prosledis ovde Activity ili Context
                         startActivityForResult(i, REQUEST_CODE_NEW_LOCATION);
+                        // Zakomentarisani deo ispod je pokusaj da se dodavanje nove lokacije otvori u Dialog-u, ne u Activity-ju, ali to zezne layout pa sam zasad odustao od ideje
+//                        FragmentManager manager = getFragmentManager();
+//                        NewLocationDialog dialog =  NewLocationDialog.newInstance(latitude, longitude);
+//                        dialog.setTargetFragment(GdeVecerasMapFragment.this, REQUEST_CODE_NEW_LOCATION);
+//                        dialog.show(manager, NEW_LOCATION_DIALOG);
                     }
                 });
 
@@ -108,7 +127,7 @@ public class MapFragment extends SupportMapFragment {
                     }
                 });
 
-                updateUI();
+                //updateUI();
             }
         });
 
@@ -116,24 +135,7 @@ public class MapFragment extends SupportMapFragment {
 
     }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        // TODO: onCreateView vec overrideuje SupportMapFragment, proveri da li ovaj tvoj override kvari to?
-//
-//        // listener koju u slucaju dugog klika na poziciju na mapi otvara novi prozor sa LatLng te kliknute pozicije, koji sluzi za unos te nove Lokacije u bazu.
-//        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-//            @Override
-//            public void onMapLongClick(LatLng latLng) {
-//                double latitude = latLng.latitude;
-//                double longitude = latLng.longitude;
-//
-//                Intent i = NewLocationActivity.newIntent(getActivity(), latitude, longitude); // TODO: razmisli da li da mu prosledis ovde Activity ili Context
-//                startActivityForResult(i, REQUEST_CODE_NEW_LOCATION);
-//            }
-//        });
-//
-//        return super.onCreateView(inflater, container, savedInstanceState);
-//    }
+
 
     @Override
     public void onStart() {
@@ -226,12 +228,27 @@ public class MapFragment extends SupportMapFragment {
         LocationServices.FusedLocationApi
                 .requestLocationUpdates(mClient, request, new LocationListener() {
                     @Override
-                    public void onLocationChanged(android.location.Location location) {  // Dakle ovo nije tvoj Location objekat vec Android-ov
+                    public void onLocationChanged(Location location) {  // Dakle ovo nije tvoj LocationPoint objekat vec Android-ov Location
                         Log.i(TAG, "Got a fix: " + location);
                         mCurrentLocation = location;
+                        SharedPreferences.setStoredLocation(getActivity(), location);
                         updateUI();
                     }
                 });
+    }
+
+
+    private void lastLocationZoom() {
+        if (mMap == null || mCurrentLocation == null) {  // ne moze bez ove provere da li je mCurentLocation == null jer prvi put kad se pozove updateUI() u onCreate(), bice null i onda puca aplikacija...
+            return;
+        }
+
+        LatLng myPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        mMap.clear();
+
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myPoint, 12);
+        mMap.animateCamera(update);
     }
 
 
@@ -251,7 +268,7 @@ public class MapFragment extends SupportMapFragment {
                 .build();
 
         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin); // TODO : mora li ovo podesavanje margine?
-        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myPoint, zoomLevel);
         mMap.animateCamera(update);
     }
 
@@ -267,7 +284,7 @@ public class MapFragment extends SupportMapFragment {
                 return;
             }
 
-            Location newLocation = NewLocationActivity.getIntentExtras(data); // ovim dobijamo novi i popunjen Location objekat
+            LocationPoint newLocation = NewLocationActivity.getIntentExtras(data); // ovim dobijamo novi i popunjen LocationPoint objekat
             LocationLab.getInstance(getActivity()).addLocation(newLocation);  // dodavanje nove lokacije u bazu
 
         }
@@ -275,11 +292,16 @@ public class MapFragment extends SupportMapFragment {
 
     public void showLocations(){
 
-        List<Location> locations = LocationLab.getInstance(getActivity()).getLocations();
+        List<LocationPoint> locations = LocationLab.getInstance(getActivity()).getLocations();
+
+        if (locations.size() == 0){
+            Toast.makeText(getActivity(), "Trenutno ne postoji nijedna lokacija u bazi, prvo ih unesite", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
-        for(Location location : locations) {
+        for(LocationPoint location : locations) {
             LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
             MarkerOptions marker = new MarkerOptions().position(point);
             mMap.addMarker(marker);
