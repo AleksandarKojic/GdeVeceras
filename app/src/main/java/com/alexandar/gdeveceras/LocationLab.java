@@ -27,6 +27,7 @@ public class LocationLab {
     private Context mContext;
     private SQLiteDatabase mDatabase;
     private static LocationLab sLocationLab;
+    private List<LocationPoint> persistentLocations = null;
 
 
 
@@ -56,25 +57,57 @@ public class LocationLab {
 
 
     public List<LocationPoint> getLocations(){
-        List<LocationPoint> locations = new ArrayList<>();
+        if(persistentLocations == null) { // na ovaj nacin samo prvi put dohvatim listu svih tacaka i cuvam ih u promenljivoj persistentLocations. Svaki sledeci put ne postavljam upit bazi vec vracam vec postojecu listu. Zbog ustede vremena
+            List<LocationPoint> locations = new ArrayList<>();
 
-        LocationCursorWrapper cursor = queryLocations(null, null); // null, null, vraca sve redove iz baze
-        try{
-            cursor.moveToFirst();
-            while(!cursor.isAfterLast()){
-                locations.add(cursor.getLocation());
-                cursor.moveToNext();
+            LocationCursorWrapper cursor = queryLocations(null, null); // null, null, vraca sve redove iz baze
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    locations.add(cursor.getLocation());
+                    cursor.moveToNext();
+                }
+            } finally {
+                cursor.close();
             }
+            persistentLocations = locations;
+            return locations;
+        } else {
+            return persistentLocations;
+        }
+
+    }
+
+
+    /**
+     * Method for getting LocationPoint object, based on its UUID
+     * @param locationID
+     * @return
+     */
+    public LocationPoint getLocation(UUID locationID){
+        LocationCursorWrapper cursor = queryLocations(LocationTable.Columns.UUID + "=?", new String[]{locationID.toString()} );
+
+        try {
+            if (cursor.getCount() == 0){
+                return null;
+            }
+
+            cursor.moveToFirst();
+            return cursor.getLocation();
         } finally {
             cursor.close();
         }
 
-        return locations;
     }
 
 
-    public LocationPoint getLocation(UUID locationID){
-        LocationCursorWrapper cursor = queryLocations(LocationTable.Columns.UUID + "=?", new String[]{locationID.toString()} );
+    /**
+     * Method for getting LocationPoint object, based on its LatLong (column in database created by concatenating Latitude + "_" + Longitude)
+     * @param latLong
+     * @return
+     */
+    public LocationPoint getLocation(String latLong){
+        LocationCursorWrapper cursor = queryLocations(LocationTable.Columns.LAT_LONG + "=?", new String[]{latLong} );
 
         try {
             if (cursor.getCount() == 0){

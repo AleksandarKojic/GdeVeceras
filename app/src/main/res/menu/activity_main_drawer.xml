@@ -3,21 +3,18 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/show_locations"
+            android:id="@+id/show_all_locations"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Show locations" />
+            android:title="@string/show_all_locations" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/choose_location_type"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="@string/choose_location_type" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/find_places_nearby"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/find_places_nearby" />
+
     </group>
 
     <item android:title="Communicate">

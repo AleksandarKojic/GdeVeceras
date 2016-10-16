@@ -1,5 +1,6 @@
 package com.alexandar.gdeveceras;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 // TODO : OBAVEZNO SLICICA. Ne moras nista ni da cuvas sam vec da uzmes fotku sa google street view-a za odredjenu lokaciju pa da korisnik lako moze da prepozna kako izgleda mesto s polja?
 
-public class LocationPoint {
+public class LocationPoint implements Serializable {
     // 2 polja koja se koriste za jedinstveni identifikaciju lokacije
     private UUID mLocationID;
     private String mLatLong; // concatenation Stringova latitude i longitude

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/dialogFindPlaces"
+    android:minWidth="600dp"
+    android:minHeight="400dp"
+    android:maxHeight="400dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/choose_location_type"
+        android:textColor="#cac8c8"
+        android:textSize="20sp"
+        android:id="@+id/spinnerTextView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="37dp" />
+
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerLocationType"
+        android:layout_below="@+id/spinnerTextView"
+        android:layout_alignRight="@+id/spinnerTextView"
+        android:layout_alignEnd="@+id/spinnerTextView"
+        android:layout_marginTop="35dp"
+        android:layout_alignLeft="@+id/spinnerTextView"
+        android:layout_alignStart="@+id/spinnerTextView" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/seek_bar"
+        android:textColor="#cac8c8"
+        android:textSize="20sp"
+        android:id="@+id/seekBarTextView"
+        android:layout_below="@+id/spinnerLocationType"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="51dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="2000"
+        android:progress="10"
+        android:secondaryProgress="0"
+        android:layout_below="@+id/seekBarTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="75dp" />
+
+    <TextView
+        android:id="@+id/seekBarText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekBar"
+        android:layout_marginLeft="29dp"
+        android:layout_marginTop="14dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dismiss_button"
+        android:id="@+id/dismissButton"
+        android:layout_below="@+id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp" />
+
+
+
+
+</RelativeLayout>

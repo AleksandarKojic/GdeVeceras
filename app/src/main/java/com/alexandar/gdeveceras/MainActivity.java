@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -20,6 +22,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 public class MainActivity extends SingleFragmentActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_ERROR = 0;
+    private static final String DIALOG_FIND_PLACES = "dialogFindPlaces";
+
     private GdeVecerasMapFragment gdeVecerasMapFragmentInstance;
 
     @Override
@@ -88,14 +92,21 @@ public class MainActivity extends SingleFragmentActivity implements NavigationVi
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.show_locations) {
+        if (id == R.id.show_all_locations) {
             gdeVecerasMapFragmentInstance.showLocations();
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.choose_location_type) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.find_places_nearby) {
+            if(gdeVecerasMapFragmentInstance.mCurrentLocation == null) {
+                Toast.makeText(this, "Please first find your location", Toast.LENGTH_SHORT).show();
+                return true;
+            } else {
+                FragmentManager manager = getSupportFragmentManager();
+                FindPlacesDialog dialog = FindPlacesDialog.newInstance();
+                dialog.show(manager, DIALOG_FIND_PLACES);
+            }
 
-        } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 

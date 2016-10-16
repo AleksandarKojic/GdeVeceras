@@ -15,9 +15,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:id="@+id/textView3"
+        android:text="@string/selected_location"
+        android:layout_marginTop="42dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/selected_location"/>
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,10 +26,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:hint="Latitude"
         android:id="@+id/latitude"
-        android:layout_marginTop="28dp"
-        android:layout_below="@+id/textView3"
+        android:layout_above="@+id/location_type"
         android:layout_alignLeft="@+id/ratingBar"
-        android:layout_alignStart="@+id/ratingBar" />
+        android:layout_alignStart="@+id/ratingBar"
+        android:layout_marginBottom="55dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,18 +47,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/ratingBar"
         android:numStars="5"
-        android:layout_marginTop="28dp"
-        android:layout_below="@+id/favourite_button"
+
+        android:stepSize="1"
+        android:layout_above="@+id/saveButton"
         android:layout_centerHorizontal="true"
-        android:progressTint="@color/colorPrimaryDark"
-        android:stepSize="1" />
+        android:layout_marginBottom="34dp" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/locationName"
         android:hint="@string/location_name"
-        android:backgroundTint="@color/abc_color_highlight_material"
+
         android:layout_above="@+id/favourite_button"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp" />
@@ -67,7 +68,6 @@
         android:layout_height="wrap_content"
         android:text="@string/save_button"
         android:id="@+id/saveButton"
-        android:layout_marginBottom="32dp"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/textView3"
         android:layout_toStartOf="@+id/textView3" />
@@ -86,8 +86,10 @@
         android:layout_height="wrap_content"
         android:text="@string/add_favourite_button"
         android:id="@+id/favourite_button"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/ratingBar"
+        android:layout_alignLeft="@+id/locationName"
+        android:layout_alignStart="@+id/locationName"
+        android:layout_marginBottom="26dp" />
 
     <Spinner
         android:layout_width="wrap_content"

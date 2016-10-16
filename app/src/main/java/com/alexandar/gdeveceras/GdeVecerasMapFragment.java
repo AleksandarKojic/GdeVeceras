@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,11 +24,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,9 +43,10 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
     private static final int MY_PERMISSIONS_REQUEST_FINE_COARSE_LOCATIONS = 1;
     public static final int REQUEST_CODE_NEW_LOCATION = 0;
     private static final String NEW_LOCATION_DIALOG = "newLocationDialog";
+    private static final String DIALOG_MARKER = "dialogMarker";
 
     private GoogleApiClient mClient;
-    private Location mCurrentLocation;
+    public Location mCurrentLocation;
     private GoogleMap mMap;
     private float zoomLevel = 17;
 
@@ -113,14 +118,20 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
                         double markerLongitude = markerPosition.longitude;
                         String markerLatLong = String.valueOf(markerLatitude) + "_" + String.valueOf(markerLongitude); // mora crtica izmedju jer je sa njom i dodajem u bazu u NewLocationActivity.java
 
-                        LocationLab.getInstance(getActivity()).removeLocationViaLatLong(markerLatLong);
+//                        LocationLab.getInstance(getActivity()).removeLocationViaLatLong(markerLatLong);
+//                        // brisanje markera. Izgleda da sam ovaj metod osvezi prikaz, ne moras da pozivas tvoj metod showLocations()
+//                        marker.remove();
 
-                        // brisanje markera. Izgleda da sam ovaj metod osvezi prikaz, ne moras da pozivas tvoj metod showLocations()
-                        marker.remove();
+                        LocationPoint locationPoint = LocationLab.getInstance(getActivity()).getLocation(markerLatLong);
+                        // u slucaju da ne postoji lokacija za marker koji je kliknut, radi se o nasoj trenutnoj lokaciji i to ce ispisati kao Toast
+                        if(locationPoint == null) {
+                            Toast.makeText(getActivity(), "This Is Your Location", Toast.LENGTH_SHORT).show();
+                        } else {
+                            FragmentManager manager = getActivity().getSupportFragmentManager();
+                            MarkerDialog dialog = MarkerDialog.newInstance(locationPoint);
+                            dialog.show(manager, DIALOG_MARKER);
+                        }
 
-
-
-    // TODO : Dodaj da se na klik markera otvori mali prozorcic (Dialog, vidi u knjizi), koji te pita da li si siguran da zelis da brsies tacku. OBAVEZNO da ti da i opciju da je editujes.
 
                         return false; // If it returns false, then the default behavior will occur in addition to your custom behavior.
                                      // The default behavior for a marker click event is to show its info window (if available) and move the camera such that the marker is centered on the map
@@ -252,6 +263,7 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
     }
 
 
+    // Metod koji zapravo crta marker samo za trenutnu lokaciju, iako je u pocetku polanirano da crta sve markere. Razmisli da promenis ime metode zbog toga.
     private void updateUI() {
         if (mMap == null || mCurrentLocation == null) {  // ne moze bez ove provere da li je mCurentLocation == null jer prvi put kad se pozove updateUI() u onCreate(), bice null i onda puca aplikacija...
             return;
@@ -260,6 +272,8 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
         LatLng myPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         MarkerOptions myMarker = new MarkerOptions().position(myPoint);
+        //myMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_arrow_downward_black_24dp));
+        myMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         mMap.clear();
         mMap.addMarker(myMarker);
 
@@ -290,6 +304,9 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
         }
     }
 
+    /**
+     * Use for showing all locations in database
+     */
     public void showLocations(){
 
         List<LocationPoint> locations = LocationLab.getInstance(getActivity()).getLocations();
@@ -304,6 +321,7 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
         for(LocationPoint location : locations) {
             LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
             MarkerOptions marker = new MarkerOptions().position(point);
+            //marker = setMarkerIcon(marker, location.getLocationType());
             mMap.addMarker(marker);
 
             bounds.include(point);
@@ -315,4 +333,109 @@ public class GdeVecerasMapFragment extends SupportMapFragment {
         mMap.animateCamera(update);
 
     }
+
+
+
+    /**
+     * Use for showing locations in radius chosen by user
+     */
+    public void showLocationsInCertainRadius(int radius, String locationType) {
+
+        double currentLocationLatitude = mCurrentLocation.getLatitude();
+        double currentLocationLongitude = mCurrentLocation.getLongitude();
+
+        if(mCurrentLocation == null) {
+            Toast.makeText(getActivity(), "Please first find your location", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<LocationPoint> locations = LocationLab.getInstance(getActivity()).getLocations();
+        List<LocationPoint> filtratedLocations = new ArrayList<>();
+
+        if (locations.size() == 0){
+            Toast.makeText(getActivity(), "Trenutno ne postoji nijedna lokacija u bazi, prvo ih unesite", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // filtriranje lokacija dodavanje u novu listu samo onih koji se nalaze unutar zadatog radijusa i zadavoljavaju uslov odabranog tipa lokacije(kafic, klub...)
+        Iterator<LocationPoint> iterator = locations.iterator();
+        while (iterator.hasNext()) {
+            LocationPoint locationPoint = iterator.next();
+            float[] results = new float[1];
+            Location.distanceBetween(currentLocationLatitude, currentLocationLongitude, locationPoint.getLatitude(), locationPoint.getLongitude(), results);
+            if (results[0] <= radius) {
+                if(locationType.equals("Sva Mesta") ) {
+                    filtratedLocations.add(locationPoint);
+                } else if(locationPoint.getLocationType().equals(locationType)) {
+                    filtratedLocations.add(locationPoint);
+                }
+
+            }
+        }
+
+        if (filtratedLocations.size() == 0){
+            Toast.makeText(getActivity(), "Nijedna lokacija trazenog tipa se ne nalazi u zadatom radijusu", Toast.LENGTH_SHORT).show();
+            mMap.clear();
+            updateUI();
+            return;
+        }
+
+        mMap.clear();
+        LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+        updateUI();
+
+        for(LocationPoint location : filtratedLocations) {
+            LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+            MarkerOptions marker = new MarkerOptions().position(point);
+            //marker = setMarkerIcon(marker, location.getLocationType());
+            mMap.addMarker(marker);
+
+            bounds.include(point);
+        }
+
+        int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds.build(), margin);  // kljucna ideja sa "bounds.build()"
+        mMap.animateCamera(update);
+    }
+
+
+    /**
+     * Method that sets appropriate marker icon, depending on place type
+     * @param marker
+     * @param locationType
+     * @return
+     */
+    private MarkerOptions setMarkerIcon(MarkerOptions marker, String locationType) {
+
+        int resourceID = 0;
+        switch (locationType){
+            case "Klub" : resourceID = R.drawable.club;
+                break;
+            case "Splav" : resourceID = R.drawable.splav;
+                break;
+            case "Kafana" : resourceID = R.drawable.kafana;
+                break;
+            case "Restoran" : resourceID = R.drawable.restaurant;
+                break;
+            case "Caffe" : resourceID = R.drawable.coffee;
+                break;
+            case "Bar" : resourceID = R.drawable.bar_coktail;
+                break;
+            case "Festival" : resourceID = R.drawable.festival;
+                break;
+            case "Fast Food" : resourceID = R.drawable.fast_food;
+                break;
+            default : resourceID = 0;
+                break;
+        }
+
+        if(resourceID != 0) {
+            marker.icon(BitmapDescriptorFactory.fromResource(resourceID));
+        } else {
+            return marker;
+        }
+
+        return marker;
+    }
+
+
 }

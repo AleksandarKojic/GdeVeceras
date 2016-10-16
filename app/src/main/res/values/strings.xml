@@ -11,9 +11,14 @@
     <string name="new_location_activity_title">Enter new location</string>
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
+    <string name="dismiss_button">Dismiss</string>
     <string name="add_favourite_button">Add to favourites</string>
     <string name="remove_favourite_button">Remove from favourites</string>
     <string name="website_link">Visit Website</string>
+    <string name="show_all_locations">Show All Locations</string>
+    <string name="choose_location_type">Choose Location Type</string>
+    <string name="find_places_nearby">Find Places Nearby</string>
+    <string name="seek_bar">Choose radius in meters</string>
 
     <string-array name="location_type_array">
         <item>Klub</item>
@@ -22,7 +27,19 @@
         <item>Restoran</item>
         <item>Caffe</item>
         <item>Bar</item>
-        <item>Koncert</item>
         <item>Festival</item>
+        <item>Fast Food</item>
+    </string-array>
+
+    <string-array name="location_type_array_alternate">
+        <item>Sva Mesta</item>
+        <item>Klub</item>
+        <item>Splav</item>
+        <item>Kafana</item>
+        <item>Restoran</item>
+        <item>Caffe</item>
+        <item>Bar</item>
+        <item>Festival</item>
+        <item>Fast Food</item>
     </string-array>
 </resources>
